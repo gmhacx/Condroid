@@ -1,0 +1,2 @@
+﻿1.仿照wirex改为设备管理器的模式
+2.重构MyService.java代码
