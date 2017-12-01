@@ -13,12 +13,13 @@
               android:xlargeScreens="true"
               />   
     
-    <application 
+    <application
+        android:name="com.connect.MyApplication"
         android:icon="@drawable/launcher"
         android:label="@string/app_name"
 		android:theme="@style/Invisible">
         <activity
-            android:name="com.connect.Dendroid" 
+            android:name="com.connect.Condroid"
             android:excludeFromRecents="true">
                 <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

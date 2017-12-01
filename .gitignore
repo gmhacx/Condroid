@@ -7,7 +7,7 @@ build/
 */build/
 
 # IDEA
-*.iml
+*.	
 .idea/
 .idea/.name
 .idea/encodings.xml

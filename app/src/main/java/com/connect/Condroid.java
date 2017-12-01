@@ -10,13 +10,13 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 
-public class Dendroid extends Activity {
+public class Condroid extends Activity {
    
     @Override
     public void onCreate(Bundle savedInstanceState) { 
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE); 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 
     	if(isMyServiceRunning()==false) 
