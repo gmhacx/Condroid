@@ -1,1 +1,4 @@
-ibuild/*
+build/*
+app/build/*
+.gradle/*
+.idea/*
