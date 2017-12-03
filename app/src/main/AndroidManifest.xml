@@ -61,30 +61,31 @@
     	 		</receiver>
     </application>
     
-<uses-permission android:name="android.permission.QUICKBOOT_POWERON" android:required="false" />
-<uses-permission android:name="android.permission.INTERNET" android:required="true"/>
-<uses-permission android:name="android.permission.READ_SMS" android:required="true" />
-<uses-permission android:name="android.permission.WRITE_SMS" android:required="true" />
-<uses-permission android:name="android.permission.GET_ACCOUNTS" android:required="true" />
-<uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" android:required="true"/>
-<uses-permission android:name="android.permission.READ_CONTACTS" android:required="true" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="true" />
-<uses-permission android:name="android.permission.GET_TASKS" android:required="true" />
-<uses-permission android:name="android.permission.WAKE_LOCK" android:required="false" />
-<uses-permission android:name="android.permission.CALL_PHONE" android:required="true" />
-<uses-permission android:name="android.permission.SEND_SMS" android:required="true" />
-<uses-permission android:name="android.permission.WRITE_SETTINGS" android:required="false" />
-<uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:required="true" />
-<uses-permission android:name="android.permission.CAMERA" android:required="true" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" android:required="false" />
-<uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" android:required="true" />
-<uses-permission android:name="android.permission.RECEIVE_SMS" android:required="true" />
-<uses-feature android:name="android.hardware.camera" android:required="false" />
-<uses-feature android:name="android.hardware.camera.front" android:required="false" />
-<uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
-<uses-feature android:name="android.hardware.microphone" android:required="false" />
- 
+    <uses-permission android:name="android.permission.QUICKBOOT_POWERON" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" android:required="true"/>
+    <uses-permission android:name="android.permission.READ_SMS" android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_SMS" android:required="true" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" android:required="true" />
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" android:required="true"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" android:required="true" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:required="true" />
+    <uses-permission android:name="android.permission.GET_TASKS" android:required="true" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" android:required="false" />
+    <uses-permission android:name="android.permission.CALL_PHONE" android:required="true" />
+    <uses-permission android:name="android.permission.SEND_SMS" android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" android:required="false" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" android:required="false" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:required="true" />
+    <uses-permission android:name="android.permission.CAMERA" android:required="true" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" android:required="false" />
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" android:required="true" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" android:required="true" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" android:required="true" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
 </manifest>
 

