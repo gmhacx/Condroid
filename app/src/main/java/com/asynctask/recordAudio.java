@@ -20,7 +20,6 @@ import java.util.Date;
  */
 
 
-//该功能暂时不可用
 public class recordAudio extends AsyncTask<String, Void, String> {
     String i = "0";
 
