@@ -71,7 +71,8 @@ if (isset($_SESSION['code'])) {
 	  </form>
 	</div>
 
-    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <!-- <script src="http://code.jquery.com/jquery.js"></script> -->
 	<script src="assets/js/bootstrap.min.js"></script>
   </body>
 </html>

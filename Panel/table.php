@@ -1,6 +1,6 @@
 <?php
   $url = "http://127.0.0.1/";
-
+  date_default_timezone_set("Asia/Shanghai");
   if (file_exists("config.php")) {
     include("config.php");
   } else {
@@ -14,7 +14,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <!-- <script src="http://code.jquery.com/jquery.js"></script> -->
 	<script src="assets/js/jquery.tablesorter.min.js"></script>
 	<script src="assets/js/jquery.tablesorter.widgets.min.js"></script>
 	<script>

